@@ -11,11 +11,8 @@ delay_time = 0.2
 def status():
     """ Function to read position, rate, and acceleration of the rotary table."""
     pos = float(inst.query(":read:pos? 1"))
-    time.sleep(delay_time)
     rate = float(inst.query(":read:rate? 1"))
-    time.sleep(delay_time)
     acc = float(inst.query(":read:acc? 1"))
-    time.sleep(delay_time)
     return {'pos':pos, 'rate':rate, 'acc':acc}
         
 
@@ -102,11 +99,21 @@ def send_rate(rate):
         
 
 
+def wait_stop(delay=0.2, count_lim=500):
+    """Wait until stopped to send next command."""
+    count = 1
+    while abs(status()["rate"]) > 0.01 and count < count_lim:
+        time.sleep(delay)
+        print("waiting...")
+        count = count + 1
+    print("stopped!")
+
+
+
 def send_position(pos):
     if check_error() == 1:
         initialize()
-    else:
-        inst.write(":int:close 1")
+    inst.write(":int:close 1")
 
     if inst.query(":mode? 1") == "Position\n":
         inst.write(f":dem:pos 1,{pos}")
@@ -117,10 +124,11 @@ def send_position(pos):
 
 
 def send_delta_position(delta_pos):
+    """Limited to 180 deg increment"""
     if check_error() == 1:
         initialize()
-    else:
-        inst.write(":int:close 1")
+
+    inst.write(":int:close 1")
 
     if inst.query(":mode? 1") == "Position\n":
         inst.write(f":dem:delta 1,{delta_pos}")
