@@ -99,7 +99,7 @@ def send_rate(rate):
         
 
 
-def wait_stop(delay=0.2, count_lim=500):
+def wait_stop(delay=0.5, count_lim=500):
     """Wait until stopped to send next command."""
     count = 1
     while abs(status()["rate"]) > 0.01 and count < count_lim:
@@ -109,7 +109,7 @@ def wait_stop(delay=0.2, count_lim=500):
     print("stopped!")
 
 
-
+# TODO: can I make a complete turn with position command?
 def send_position(pos):
     if check_error() == 1:
         initialize()
