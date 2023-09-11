@@ -10,11 +10,27 @@ delay_time = 0.2
 
 def status():
     """ Function to read position, rate, and acceleration of the rotary table."""
-    pos = float(inst.query(":read:pos? 1"))
-    rate = float(inst.query(":read:rate? 1"))
-    acc = float(inst.query(":read:acc? 1"))
+    pos = read_pos()
+    rate = read_rate()
+    acc = read_acc()
     return {'pos':pos, 'rate':rate, 'acc':acc}
-        
+
+
+
+def read_pos():        
+    pos = float(inst.query(":read:pos? 1"))
+    return pos
+
+def read_rate():
+    inst.write(":read:rate? 1")
+    time.sleep(0.001)
+    rate = float(inst.read())
+    return rate
+
+def read_acc():        
+    acc = float(inst.query(":read:acc? 1"))
+    return acc
+
 
 
 def check_error():
