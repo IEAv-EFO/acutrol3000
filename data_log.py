@@ -3,32 +3,42 @@ import time
 import os
 
 directory = "data"
-file = "rate_collection_1.csv"
+file = "rate_collection_004_stopped.csv"
 
 if not os.path.exists(directory):
-    os.makedirs(directory)
+    os.makedirs(directory)  
 
+# define rotation routine
+set_limits()
+limits()
+initialize()
+# send_oscillation(155,1) # maximum (155,1)
 
-n = 1000
+n = 0
 loop_time_sum = 0
 time_initial = time.time()
-for i in range(0,n):
-    init_loop_time = time.time()
 
-    # save data
-    rate = read_rate()
-    
-    with open(f"{directory}/{file}", 'a') as text_file:
-        text_file.write(f"{rate}\n")
+while True:
+    try:
+        init_loop_time = time.time()
 
-    loop_time = time.time() - init_loop_time    
-    loop_time_sum = loop_time_sum + loop_time
-    
+        # read and save data
+        rate = read_rate()
+        with open(f"{directory}/{file}", 'a') as text_file:
+            text_file.write(f"{rate}\n")
+
+        loop_time = time.time() - init_loop_time    
+        loop_time_sum = loop_time_sum + loop_time
+        n = n + 1
+    except KeyboardInterrupt:
+        break
+
+terminate()
+
 text_file.close()
-mean_loop_time = loop_time_sum/n
+mean_loop_time = loop_time_sum / n
 final_time = time.time() - time_initial
 
-
-print("Number of requests:",n)
-print("Mean loop time: ",mean_loop_time)
-print("total time: ",final_time)
+print("\nNumber of measurements:", n)
+print("Mean loop time: ", mean_loop_time)
+print("Total time: ", final_time)
