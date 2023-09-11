@@ -5,7 +5,6 @@ rm = pyvisa.ResourceManager()
 inst = rm.open_resource('GPIB1::1::INSTR')
 print(inst.query("*idn?"))
 
-
 delay_time = 0.2
 
 def status():
@@ -68,6 +67,8 @@ def terminate():
 
 def stop():
     """Stops movement by setting rate equal 0."""
+    send_oscillation(0,0)
+    time.sleep(delay_time)
     inst.write(":mode:rate 1")
     time.sleep(delay_time)
     inst.write(":dem:rate 1,0")
@@ -84,34 +85,43 @@ def limits():
     # each mode has its limit
     print("acceleration pos mode:", float(inst.query(":limit:acc? pos,1")),"deg/s/s")
     print("acceleration rate mode:", float(inst.query(":limit:acc? rate,1")),"deg/s/s")
+    print("acceleration synthesis mode:", float(inst.query(":limit:acc? synt,1")),"deg/s/s")
     print("rate pos mode:", float(inst.query(":limit:rate? pos,1")),"deg/s")
     print("rate rate mode:", float(inst.query(":limit:rate? rate,1")),"deg/s")    
+    print("rate synthesis mode:", float(inst.query(":limit:rate? synt,1")),"deg/s")    
 
 
 
-def set_limits(lim_acc, lim_rate=1000):
+def set_limits(lim_acc=8300, lim_rate=1000):
     """
     Set acceleration and rate limits.
     - Necessary to adjust the rate when using the position command.
     """
     inst.write(f":lim:acc pos,1,{lim_acc}")
     inst.write(f":lim:acc rate,1,{lim_acc}")
+    inst.write(f":lim:acc synt,1,{lim_acc}")
     inst.write(f":lim:rate pos,1,{lim_rate}")
     inst.write(f":lim:rate rate,1,{lim_rate}")
+    inst.write(f":lim:rate synt,1,{lim_rate}")
 
 
 
 def send_rate(rate):
     if check_error() == 1:
         initialize()
+        time.sleed(delay_time)
     else:
         inst.write(":int:close 1")
+        time.sleed(delay_time)
 
     if inst.query(":mode? 1") == "Rate\n":
         inst.write(f":dem:rate 1,{rate}")
+        time.sleed(delay_time)
     else:
         inst.write(":mode 1,rate")
+        time.sleed(delay_time)
         inst.write(f":dem:rate 1,{rate}")
+        time.sleed(delay_time)
         
 
 
@@ -145,11 +155,35 @@ def send_delta_position(delta_pos):
         initialize()
 
     inst.write(":int:close 1")
+    time.sleep(delay_time)
 
     if inst.query(":mode? 1") == "Position\n":
         inst.write(f":dem:delta 1,{delta_pos}")
+        time.sleep(delay_time)
+
     else:
-        inst.write(":mode 1,pos")
+        inst.write(":mode 1,pos")    
+        time.sleep(delay_time)
         inst.write(f":dem:delta 1,{delta_pos}")
+        time.sleep(delay_time)
         
 
+
+def set_oscillation(amp_slew=2.0000, freq_slew=0.1000):
+    # TODO: Command not working, don't know why
+    inst.write(f":con:osc 1,Enable,{amp_slew},{freq_slew},Pos,Lin")
+    time.sleep(delay_time)
+    print(inst.query(":con:osc? 1"))
+    time.sleep(delay_time)
+
+
+
+def send_oscillation(amp, freq, phase=0):
+    """
+    amp = pos/rate/acc... max pos=155 reaches 960 deg/s
+    linear frequency slew means Hz/s
+    """
+    inst.write(":mode:synt 1")
+    time.sleep(delay_time)
+    inst.write(f":dem:osc 1,{amp},{freq},{phase}")
+    time.sleep(delay_time)
