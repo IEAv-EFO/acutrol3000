@@ -9,11 +9,16 @@ delay_time = 0.2
 
 def status():
     """ Function to read position, rate, and acceleration of the rotary table."""
-    pos = read_pos()
-    rate = read_rate()
-    acc = read_acc()
+    inst.clear()
+    # single command is faster then multiple communication handshakes
+    # but it is failing when requested multiple times
+    data = inst.query(":read:pos? 1;rate? 1;acc? 1")
+    data = data.split(";")
+    pos = float(data[0])
+    rate = float(data[1])
+    acc = float(data[2])
+    
     return {'pos':pos, 'rate':rate, 'acc':acc}
-
 
 
 def read_pos():        
