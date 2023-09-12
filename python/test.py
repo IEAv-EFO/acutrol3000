@@ -1,7 +1,7 @@
 from acutrol3000 import *
 import time
 
-n = 100
+n = 10
 loop_time_sum = 0
 time_initial = time.time()
 for i in range(0,n):
@@ -9,9 +9,10 @@ for i in range(0,n):
 
     # logic to test time
     # status()
-    read_rate()
+    # read_pos()
+    inst.query(":r:va? 1082")
 
-
+    
     loop_time = time.time() - init_loop_time    
     loop_time_sum = loop_time_sum + loop_time
     

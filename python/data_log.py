@@ -3,7 +3,7 @@ import time
 import os
 
 directory = "data"
-file = "rate_collection_004_stopped.csv"
+file = "rate_collection_007_1hz_160deg.csv"
 
 if not os.path.exists(directory):
     os.makedirs(directory)  
@@ -12,8 +12,9 @@ if not os.path.exists(directory):
 set_limits()
 limits()
 initialize()
-# send_oscillation(155,1) # maximum (155,1)
-
+send_oscillation(160,1) # maximum (155,1)
+initialize()
+send_oscillation(160,1) # maximum (155,1)
 n = 0
 loop_time_sum = 0
 time_initial = time.time()
