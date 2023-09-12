@@ -9,7 +9,6 @@ delay_time = 0.2
 
 def status():
     """ Function to read position, rate, and acceleration of the rotary table."""
-    inst.clear()
     # single command is faster then multiple communication handshakes
     # but it is failing when requested multiple times
     data = inst.query(":read:pos? 1;rate? 1;acc? 1")

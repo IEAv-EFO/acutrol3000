@@ -1,8 +1,8 @@
-from acutrol3000 import *
+from python.acutrol3000 import *
 import time
 import os
 
-directory = "data"
+directory = "../data"
 file = "rate_collection_007_1hz_160deg.csv"
 
 if not os.path.exists(directory):
