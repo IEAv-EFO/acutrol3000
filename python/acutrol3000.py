@@ -9,8 +9,8 @@ delay_time = 0.2
 
 def status():
     """ Function to read position, rate, and acceleration of the rotary table."""
-    # single command is faster then multiple communication handshakes
-    # but it is failing when requested multiple times
+    # single command is faster then multiple
+    # fastest period is 40 ms
     data = inst.query(":read:pos? 1;rate? 1;acc? 1")
     data = data.split(";")
     pos = float(data[0])
